@@ -1,0 +1,89 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<h1>
+    COMP4976 Final Exam - Fall 2022
+</h1>
+<h2>
+    Mark De Guzman - A01224862
+</h2>
+<h3>
+    Olympic Games
+</h3>
+<div style="display: inline-flex;">
+    <select name="continents" id="continents" @bind="newContinent">
+        <option value="">All</option>
+        <option value="Europe">Europe</option>
+        <option value="Asia">Asia</option>
+        <option value="North America">North America</option>
+        <option value="South America">South America</option>
+        <option value="Oceania">Oceania</option>
+    </select>
+    <button type="button" class="btn btn-primary" @onclick="getGames">Get Games</button>
+</div>
+
+
+@if (games == null)
+{
+    <div></div>
+}
+else
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Continent</th>
+            <th>Season</th>
+            <th>Opening</th>
+            <th>Closing</th>
+            <th>Year</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var game in games)
+            {
+                <tr>
+                    <td>@game.Id</td>
+                    <td>@game.City</td>
+                    <td>@game.Country</td>
+                    <td>@game.Continent</td>
+                    <td>@game.Season</td>
+                    <td>@game.Opening</td>
+                    <td>@game.Closing</td>
+                    <td>@game.Year</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Game[]? games;
+    private string? newContinent;
+    public async Task getGames()
+    {
+        if (newContinent == null || newContinent == "") {
+            games = await Http.GetFromJsonAsync<Game[]>("http://localhost:7071/api/games");
+        } else {
+            games = await Http.GetFromJsonAsync<Game[]>("http://localhost:7071/api/games/continent/" + newContinent);
+        }
+    }
+
+    public class Game
+    {
+        public int Id { get; set; }
+        public int Year { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
+        public string Continent { get; set; }
+        public string Season { get; set; }
+        public DateTime Opening { get; set; }
+        public DateTime Closing { get; set; }
+
+    }
+}
